@@ -1,0 +1,61 @@
+<scene previous_export_time="1369742564.325475" export_time="1458162022.377981" formatVersion="1.0.1" exported_by="kanwarmalik" >
+  <nodes >
+    <node name="Sun" >
+      <position x="-1.000000" z="1.000000" y="1.000000" />
+      <rotation qw="0.689387" qz="0.209600" qy="-0.637823" qx="0.272023" />
+      <scale x="1.000000" z="1.000000" y="1.000000" />
+      <game >
+        <sensors />
+        <actuators />
+      </game>
+      <light type="directional" powerScale="1.0" name="Sun" >
+        <position x="-1.000000" z="1.000000" y="1.000000" />
+        <lightAttenuation linear="0.04" constant="1.0" range="5000" quadratic="0.0" />
+        <direction x="0.058" z="0.642" y="-0.764" />
+        <colourDiffuse r="1.0" b="1.0" g="1.0" />
+        <colourSpecular r="1.0" b="1.0" g="1.0" />
+      </light>
+    </node>
+    <node name="Armature" >
+      <position x="0.000000" z="-0.000000" y="0.000000" />
+      <rotation qw="1.000000" qz="-0.000000" qy="0.000000" qx="0.000000" />
+      <scale x="1.000000" z="1.000000" y="1.000000" />
+      <game >
+        <sensors />
+        <actuators />
+      </game>
+      <node name="Template" >
+        <position x="0.000000" z="0.000000" y="0.000000" />
+        <rotation qw="1.000000" qz="-0.000000" qy="0.000000" qx="0.000000" />
+        <scale x="1.000000" z="1.000000" y="1.000000" />
+        <game >
+          <sensors />
+          <actuators />
+        </game>
+        <entity friction_x="1.0" actor="False" friction_y="1.0" lock_rot_z="False" lock_trans_z="False" anisotropic_friction="False" lock_trans_y="False" lock_rot_y="False" velocity_max="0.0" mass_radius="1.0" velocity_min="0.0" lock_trans_x="False" meshFile="Template.mesh" inertia_tensor="0.4000000059604645" damping_trans="0.03999999910593033" ghost="False" physics_type="STATIC" friction_z="1.0" name="Template" lock_rot_x="False" mass="1.0" damping_rot="0.10000000149011612" />
+      </node>
+    </node>
+    <node name="Camera" >
+      <position x="-6.500000" z="-0.000000" y="1.500000" />
+      <rotation qw="0.500000" qz="0.500000" qy="-0.500000" qx="0.500000" />
+      <scale x="1.000000" z="1.000000" y="1.000000" />
+      <game >
+        <sensors />
+        <actuators />
+      </game>
+      <camera fov="0.5033799435163735" projectionType="perspective" name="Camera" >
+        <clipping farPlaneDist="100.0" far="100.0" near="0.10000000149011612" nearPlaneDist="0.10000000149011612" />
+      </camera>
+    </node>
+  </nodes>
+  <externals >
+    <item type="material" >
+      <file name="/Users/kanwarmalik/Documents/workspace/TemplateHuman/Template.material" />
+    </item>
+  </externals>
+  <environment >
+    <colourBackground r="0.05087608844041824" b="0.05087608844041824" g="0.05087608844041824" />
+    <colourAmbient r="0.0" b="0.0" g="0.0" />
+    <colourDiffuse r="0.05087608844041824" b="0.05087608844041824" g="0.05087608844041824" />
+  </environment>
+</scene>
