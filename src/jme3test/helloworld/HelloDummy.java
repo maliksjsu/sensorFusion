@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2009-2012 jMonkeyEngine
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- * * Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
- *
- * * Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in the
- *   documentation and/or other materials provided with the distribution.
- *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
- *   may be used to endorse or promote products derived from this software
- *   without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 package jme3test.helloworld;
 import com.jme3.animation.AnimChannel;
@@ -54,14 +24,19 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.scene.Geometry;
 import com.jme3.input.controls.MouseAxisTrigger;
+import java.lang.*;
 
 public class HelloDummy extends SimpleApplication {
 
     private AnimControl control;
+    private AnimControl suit;
     private float angle = 0;
     private float scale = 1;
     private float rate = 1;
-    
+    public static Float[][] CSVArray;
+    public int counter = 1;
+    public boolean start = false;
+    public int row = 1;
     
     public static void main(String[] args) {
         HelloDummy app = new HelloDummy();
@@ -70,7 +45,8 @@ public class HelloDummy extends SimpleApplication {
     protected Geometry model;
     Boolean isRunning=true;
 
-    @Override
+    @Override 
+    
     public void simpleInitApp() {
         flyCam.setMoveSpeed(10f);
         cam.setLocation(new Vector3f(6.4013605f, 7.488437f, 12.843031f));
@@ -81,8 +57,14 @@ public class HelloDummy extends SimpleApplication {
         dl.setColor(new ColorRGBA(1f, 1f, 1f, 1.0f));
         rootNode.addLight(dl);
 
-        Node model = (Node) assetManager.loadModel("Models/Template/Template.mesh.xml");
-
+        Node model = (Node) assetManager.loadModel("Models/Desktop_Body/Desktop_Body.mesh.j3o");
+        //model.attachChild(assetManager.loadModel("Models/Desktop_malesuit01HRes/Desktop_malesuit01HRes.mesh.j3o"));
+        model.attachChild(assetManager.loadModel("Models/Desktop_classicshoes_hres/Desktop_classicshoes_hres.mesh.j3o"));
+        model.attachChild(assetManager.loadModel("Models/Desktop_HighPolyEyes/Desktop_HighPolyEyes.mesh.j3o"));
+        model.attachChild(assetManager.loadModel("Models/Desktop_mhair01/Desktop_mhair01.mesh.j3o"));
+        Node suit1 = (Node) assetManager.loadModel("Models/Desktop_malesuit01HRes/Desktop_malesuit01HRes.mesh.j3o");
+        
+        suit = suit1.getControl(AnimControl.class);
         control = model.getControl(AnimControl.class);
 
         //AnimChannel feet = control.createChannel();
@@ -91,6 +73,7 @@ public class HelloDummy extends SimpleApplication {
         //flyCam.setEnabled(false); 
         //feet.addFromRootBone("Arm.Hand.IK_L");
         rootNode.attachChild(model);
+        rootNode.attachChild(suit1);
         initKeys();
     }
     
@@ -115,7 +98,7 @@ public class HelloDummy extends SimpleApplication {
     
     
  
-  }
+    }
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean keyPressed, float tpf) {
           if (name.equals("Pause") && !keyPressed) {
@@ -126,10 +109,55 @@ public class HelloDummy extends SimpleApplication {
     
     private AnalogListener analogListener = new AnalogListener() {
         public void onAnalog(String name, float value, float tpf) {
-          if (isRunning) {
+            if (isRunning) {
               
-            
-            
+                if( "Left".equals(name)){
+                    CSV_Input FeedIn = new CSV_Input();         //Construct CSV_Input
+                    CSVArray = new Float[2000][4];              //Set up local array
+                    CSVArray = FeedIn.SetUpCSVArray();          //Get array from the CSV input function
+                    start = true;
+
+                }
+                if( "Rotate".equals(name)){ //Feeds in from file if "J" is pressed
+                
+                    Quaternion FromFile = new Quaternion();                 //Quaternion initalized at (0,0,0,1) (x,y,z,w)
+                    Bone b = control.getSkeleton().getBone("hand.L");   //Designate bone as left shoulder
+                    //Bone b1 = suit.getSkeleton().getBone("lowerarm.R");
+                    b.setUserControl(true);                                 //Allow user input
+                    //b.
+                    
+                   
+                   if (row<1997)                                            //Limit rows to available 
+                   {
+                        if (start == true)
+                        {
+                            System.out.println("Visualizing...");
+                            FromFile.set(CSVArray[row][3],CSVArray[row][0], CSVArray[row][1], CSVArray[row][2]); //CSV Input is (w,x,y,z) must feed into JM3 as (x,y,z,w)
+                            
+                            b.setUserTransforms(Vector3f.ZERO , FromFile.opposite(), Vector3f.UNIT_XYZ ); //Set user input to FromFile Quaternion
+                        
+                            //pause 0.1 sec to mimic the 10 Hz sample rate
+                            try{
+                            Thread.sleep(10);                       //Currently sped up to show better demoing
+                            } catch(InterruptedException ex){       //Interrupt exception caught
+                                Thread.currentThread().interrupt();
+                            }
+                        
+                            row++;                          //Iterate row
+                            System.out.println("Row: "+row);
+                        }
+                        else
+                        {
+                            System.out.println("Must load data first.");    //Check to see if data loaded. Otherwise will return nullpointer exception
+                        }
+                   }
+                   else
+                   {
+                       System.out.println("Done");
+                   }
+                      
+                } 
+
             if( "Scroll".equals(name) ) {
                 
                 Quaternion rotate = new Quaternion();
@@ -142,12 +170,15 @@ public class HelloDummy extends SimpleApplication {
                 //rotation.mulltLocal(rotate);
                 
                 
-                Bone b = control.getSkeleton().getBone("Shoulder_R");
+                Bone b = control.getSkeleton().getBone("deltoid.L");
+                Bone b1 = suit.getSkeleton().getBone("deltoid.L");
                
                 //Bone b2 = control.getSkeleton().getBone("Arm.Lower_L");
                 
                 b.setUserControl(true);
+                b1.setUserControl(true);
                 b.setUserTransforms(Vector3f.ZERO, rotate, Vector3f.UNIT_XYZ);
+                b1.setUserTransforms(Vector3f.ZERO, rotate, Vector3f.UNIT_XYZ);
  
 
             }else if ("Scroll_negative".equals(name)) {
@@ -159,11 +190,14 @@ public class HelloDummy extends SimpleApplication {
                 //rotation.mulltLocal(rotate);
                 
                 
-                Bone b = control.getSkeleton().getBone("Shoulder_R");
+                Bone b = control.getSkeleton().getBone("deltoid.L");
+                Bone b1 = suit.getSkeleton().getBone("deltoid.L");
                 //Bone b2 = control.getSkeleton().getBone("Arm.Lower_L");
                     
                 b.setUserControl(true);
+                b1.setUserControl(true);
                 b.setUserTransforms(Vector3f.ZERO, rotate, Vector3f.UNIT_XYZ);
+                b1.setUserTransforms(Vector3f.ZERO, rotate, Vector3f.UNIT_XYZ);
                 
                 
             }
@@ -206,8 +240,6 @@ public class HelloDummy extends SimpleApplication {
           }
         }
       };
-
+    }
     
    
-
-}
